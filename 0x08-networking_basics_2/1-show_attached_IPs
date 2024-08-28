@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+# A bash script that displays all active IPv4 IPs on the
+#+ machine it’s executed on
+
+while read -r line; do
+    echo "$line" | cut -d ' ' -f2
+done < <(ifconfig | sed -En '/inet\s+/p')
