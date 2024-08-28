@@ -1,0 +1,42 @@
+#!/usr/bin/env bash
+# Bash script that configures an Ubuntu server and:
+#+ resolves localhost to 127.0.0.2
+#+ resolves facebok to 8.8.8.8
+
+# create and poulate array of hosts and set variables.
+declare -A hosts_arr
+hosts_arr["facebook.com"]="8.8.8.8"
+hosts_arr["localhost"]="127.0.0.2"
+hosts_file="/etc/hosts"
+vfile="./hosts.temp"
+vhosts_bak="/etc/hosts.bak"
+
+# backup hosts file and copy to current location
+if [[ -f "$hosts_file" ]]; then
+    cp "$hosts_file" "$vfile"
+
+    # avoid existing *.bak host file overwrite
+    while [[ -f "$vhosts_bak" ]]; do
+	vhosts_bak+=".bak"
+    done
+
+    # mv /etc/hosts "$vhosts_bak"
+    mv "$hosts_file" "$vhosts_bak"
+else
+    touch "$vfile"
+fi
+
+# edit host file(copy) as required
+for host in "${!hosts_arr[@]}"; do
+    host_line="$(sed -En "/$host$/p" $vfile)"
+    new_host_line="$(echo -e ${hosts_arr[$host]}$'\t'$host)"
+    if (( "${#host_line}" )); then
+	sed -Ei "s/$host_line/$new_host_line/" "$vfile"
+    else
+	echo "$new_host_line" >> "$vfile"
+    fi
+done
+
+# place hosts file back to the /hosts dir
+cp -f "$vfile" /etc/hosts
+rm "$vfile"
