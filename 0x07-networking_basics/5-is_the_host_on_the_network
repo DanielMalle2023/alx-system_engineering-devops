@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+# A bash script that pings an IP address passed as an arg
+#+ prints Usage: 5-is_the_host_on_the_network {IP_ADDRESS} if no argument passed
+#+ pings the IP 5 times only
+
+if (( $# == 0 )); then
+    echo "Usage: 5-is_the_host_on_the_network {IP_ADDRESS}"
+else
+    ping -c 5 "$1"
+fi
